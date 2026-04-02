@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LunarEVM - Add to Wallet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .network-info {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #333;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 480px) {
+            .buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-secondary.metamask {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/></svg>') no-repeat 5px center;
+            background-size: 20px;
+            padding-left: 30px;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            font-size: 13px;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            display: block;
+            border: 1px solid #bee5eb;
+        }
+
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            display: block;
+            border: 1px solid #ffeaa7;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .feature-list {
+            text-align: left;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+
+        .feature-list li {
+            list-style: none;
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .wallet-compatibility {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .wallet-badge {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .spinner {
+            border: 3px solid #f0f0f0;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🌙</div>
+            <h1>LunarEVM</h1>
+            <p class="subtitle">Add LunarEVM to your blockchain wallet in one click!</p>
+        </div>
+
+        <div class="network-info">
+            <div class="info-row">
+                <span class="info-label">Network:</span>
+                <span class="info-value">LunarEVM</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Chain ID:</span>
+                <span class="info-value">1</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">RPC URL:</span>
+                <span class="info-value" id="rpcUrl">http://localhost:8545</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Currency:</span>
+                <span class="info-value">LUNAR</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Decimals:</span>
+                <span class="info-value">18</span>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn-primary" onclick="addNetworkMetaMask()">
+                🦊 Add to MetaMask
+            </button>
+            <button class="btn-secondary" onclick="addNetworkGeneric()">
+                + Add Manually
+            </button>
+            <button class="btn-secondary" onclick="copyNetworkConfig()">
+                📋 Copy Config
+            </button>
+            <button class="btn-secondary" onclick="testConnection()">
+                🔗 Test Connection
+            </button>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <div class="wallet-compatibility">
+            <div class="wallet-badge">✅ MetaMask</div>
+            <div class="wallet-badge">✅ Phantom</div>
+            <div class="wallet-badge">✅ Trust Wallet</div>
+            <div class="wallet-badge">✅ Coinbase</div>
+            <div class="wallet-badge">✅ WalletConnect</div>
+            <div class="wallet-badge">✅ Ledger</div>
+            <div class="wallet-badge">✅ Trezor</div>
+            <div class="wallet-badge">✅ More...</div>
+        </div>
+
+        <div class="feature-list">
+            <ul>
+                <li>Stake LUNAR tokens</li>
+                <li>Create custom tokens</li>
+                <li>Create NFTs</li>
+                <li>Proof of History</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>💡 Keep your RPC running: <code>./lunarEVMd rpc</code></p>
+            <p style="margin-top: 10px;">
+                <a href="https://github.com/lunarEVM/lunarEVM" target="_blank">GitHub</a> •
+                <a href="#" onclick="showHelp(); return false;">Help</a> •
+                <a href="#" onclick="showDocs(); return false;">Docs</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const networkConfig = {
+            chainId: '0x1',
+            chainName: 'LunarEVM',
+            rpcUrls: ['http://localhost:8545'],
+            blockExplorerUrls: ['http://localhost:3000'],
+            nativeCurrency: {
+                name: 'Lunar',
+                symbol: 'LUNAR',
+                decimals: 18
+            }
+        };
+
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            setTimeout(() => {
+                if (type === 'success') {
+                    statusEl.style.display = 'none';
+                }
+            }, 5000);
+        }
+
+        async function addNetworkMetaMask() {
+            if (!window.ethereum) {
+                showStatus('❌ MetaMask not detected. Please install MetaMask browser extension.', 'error');
+                return;
+            }
+
+            try {
+                showStatus('⏳ Requesting MetaMask...', 'info');
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [networkConfig]
+                });
+                showStatus('✅ LunarEVM added to MetaMask successfully!', 'success');
+            } catch (error) {
+                if (error.code === 4001) {
+                    showStatus('⚠️ User rejected the request.', 'warning');
+                } else if (error.code === -32602) {
+                    showStatus('ℹ️ Network already exists in MetaMask!', 'info');
+                } else {
+                    showStatus(`❌ Error: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        function addNetworkGeneric() {
+            showStatus('📋 Use these settings to manually add LunarEVM to your wallet:\n\nNetwork Name: LunarEVM\nRPC URL: http://localhost:8545\nChain ID: 1\nCurrency Symbol: LUNAR', 'info');
+        }
+
+        function copyNetworkConfig() {
+            const config = JSON.stringify(networkConfig, null, 2);
+            navigator.clipboard.writeText(config).then(() => {
+                showStatus('✅ Network config copied to clipboard!', 'success');
+            }).catch(() => {
+                showStatus('❌ Failed to copy config', 'error');
+            });
+        }
+
+        async function testConnection() {
+            try {
+                showStatus('🔗 Testing connection...', 'info');
+                const response = await fetch('http://localhost:8545', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'web3_clientVersion',
+                        params: [],
+                        id: 1
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showStatus('✅ Connection successful! LunarEVM RPC is running.', 'success');
+                } else {
+                    showStatus('❌ Connection failed. Is the RPC server running?', 'error');
+                }
+            } catch (error) {
+                showStatus('❌ Cannot reach RPC server. Make sure to run: ./lunarEVMd rpc', 'error');
+            }
+        }
+
+        function showHelp() {
+            alert('LunarEVM Wallet Integration Help\n\n' +
+                '1. Make sure LunarEVM RPC is running:\n' +
+                '   ./lunarEVMd rpc\n\n' +
+                '2. Click "Add to MetaMask" or use your wallet\'s add network feature\n\n' +
+                '3. Approve the network addition in your wallet\n\n' +
+                '4. You\'re ready to use LunarEVM!\n\n' +
+                'For more help, visit: https://github.com/lunarEVM/lunarEVM');
+        }
+
+        function showDocs() {
+            window.open('https://github.com/lunarEVM/lunarEVM/blob/main/UNIVERSAL_WALLET_IMPORT.md', '_blank');
+        }
+
+        // Auto-detect RPC URL
+        window.addEventListener('load', () => {
+            const port = window.location.port || (window.location.protocol === 'https:' ? 443 : 80);
+            // Keep localhost:8545 as default
+        });
+    </script>
+</body>
+</html>

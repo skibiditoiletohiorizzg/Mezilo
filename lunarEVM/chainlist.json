@@ -1,0 +1,36 @@
+{
+  "name": "LunarEVM",
+  "title": "LunarEVM",
+  "chain": "LunarEVM",
+  "rpc": [
+    "http://localhost:8545"
+  ],
+  "faucets": [],
+  "features": [
+    {
+      "name": "EIP155"
+    },
+    {
+      "name": "EIP1559"
+    }
+  ],
+  "explorers": [
+    {
+      "name": "LunarEVM Explorer",
+      "url": "http://localhost:3000",
+      "standard": "EIP3091"
+    }
+  ],
+  "infoURL": "https://github.com/lunarEVM/lunarEVM",
+  "shortName": "lunar",
+  "chainId": 7372,
+  "networkId": 7372,
+  "slip44": 60,
+  "nativeCurrency": {
+    "name": "Lunar",
+    "symbol": "LUNAR",
+    "decimals": 18
+  },
+  "type": "L2",
+  "status": "active"
+}
